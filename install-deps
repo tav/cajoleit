@@ -1,0 +1,81 @@
+#! /usr/bin/env bash
+
+# Public Domain (-) 2010-2011 The Cajoleit Authors.
+# See the Cajoleit UNLICENSE file for details.
+
+# ------------------------------------------------------------------------------
+# Clean Files
+# ------------------------------------------------------------------------------
+
+if [ "arg:$1" == "arg:--clean" ]; then
+	echo
+	echo "# Removing Downloaded Files"
+	echo
+	rm -rf .appengine_java_sdk
+	rm -rf lib
+	exit
+fi
+
+# ------------------------------------------------------------------------------
+# Some Constants
+# ------------------------------------------------------------------------------
+
+CAJA_DISTFILE="caja-r4464.tar.bz2"
+
+SDK_VERSION="1.4.3"
+SDK_HOST="http://googleappengine.googlecode.com/files"
+SDK_BASE="appengine-java-sdk-${SDK_VERSION}"
+SDK_FILE="${SDK_BASE}.zip"
+SDK_URL="${SDK_HOST}/${SDK_FILE}"
+
+# ------------------------------------------------------------------------------
+# Download the App Engine SDK
+# ------------------------------------------------------------------------------
+
+if [ ! -d .appengine_java_sdk ]; then
+	if [ -f $SDK_FILE ]; then
+		rm $SDK_FILE
+	fi
+	echo
+	echo "# Downloading the App Engine SDK..."
+	echo
+	curl -O $SDK_URL
+	echo
+	echo "# Installing the App Engine SDK..."
+	echo
+	unzip $SDK_FILE
+	mv $SDK_BASE .appengine_java_sdk
+fi
+
+if [ -f $SDK_FILE ]; then
+	rm $SDK_FILE
+fi
+
+# ------------------------------------------------------------------------------
+# Download the Caja Jar Files
+# ------------------------------------------------------------------------------
+
+if [ ! -d lib ]; then
+	echo
+	echo "# Downloading the Caja Jar Files..."
+	echo
+	curl -O http://cloud.github.com/downloads/tav/cajoleit/$CAJA_DISTFILE
+	tar xjvf $CAJA_DISTFILE
+	rm $CAJA_DISTFILE
+fi
+
+# ------------------------------------------------------------------------------
+# Download the CoffeeScript Compiler
+# ------------------------------------------------------------------------------
+
+if [ ! -f lib/coffee-script.js ]; then
+	echo
+	echo "# Downloading the CoffeeScript Compiler..."
+	echo
+	cd lib
+	curl -O https://github.com/jashkenas/coffee-script/raw/1.1.0/extras/coffee-script.js
+fi
+
+echo
+echo "# Downloaded All Dependencies!"
+echo
